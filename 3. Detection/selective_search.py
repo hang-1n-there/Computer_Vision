@@ -53,8 +53,28 @@ class Region():
         return self.img_rgb_copy
 
 class IoU():
-    def __init__(self,):
+    def __init__(self, cand_box, gt_box):
+        self.gt_box = gt_box # ground truth bounding box
+        self.cand_box = cand_box
         
+    def compute_iou(self):
+        # intersection : x_max , y_max , x_min , y_min
+        
+        x1 = np.maximum(self.cand_box[0], self.gt_box[0])
+        y1 = np.maximum(self.cand_box[1], self.gt_box[1])
+        x2 = np.minimum(self.cand_box[2], self.gt_box[2])
+        y2 = np.minimum(self.cand_box[3], self.gt_box[3])
+        
+        cand_box_area = (self.cand_box[2] - self.cand_box[0]) * (self.cand_box[3] - self.cand_box[1])
+        gt_box_area = (self.gt_box[2] - self.gt_box[0]) * (self.gt_box[3] - self.gt_box[1])
+        
+        intersection = np.maximum(x2 - x1, 0) * np.maximum(y2 - y1, 0)
+        union = cand_box_area + gt_box_area - intersection
+        
+        iou = intersection / union
+        
+        return iou
+    
 if __name__ == "__main__":
     img = '0. Img/IU.jpg'
     img_obj = Img()  # Img 클래스의 인스턴스 생성
