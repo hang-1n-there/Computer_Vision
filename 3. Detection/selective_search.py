@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 import selectivesearch
+import numpy as np
 
 class Img():
     def img_read(self, img):
@@ -28,11 +29,32 @@ class Region():
         
     def rect(self):
         # rect 정보만 추출
-        cand_rects = [cand['rect'] for cand in self.regions]
-        print(cand_rects)
+        self.cand_rects = [cand['rect'] for cand in self.regions]
+        print(self.cand_rects)
         
-        return cand_rects
+        return self.cand_rects
     
+    def bbox(self):
+        green_rgb = (125, 255, 51)
+        self.img_rgb_copy = self.img_rgb.copy()
+        
+        for rect in self.cand_rects:
+            left, top = rect[0], rect[1]
+            
+            #rect[2] : 너비 , rect[3] : 높이
+            right = left + rect[2]
+            bottom = top + rect[3]
+            
+            self.img_rgb_copy = cv2.rectangle(self.img_rgb_copy, (left,top) , (right,bottom) , color = green_rgb , thickness= 2)
+         
+        plt.figure(figsize=(8,8))
+        plt.imshow(self.img_rgb_copy)
+        plt.show()               
+        return self.img_rgb_copy
+
+class IoU():
+    def __init__(self,):
+        
 if __name__ == "__main__":
     img = '0. Img/IU.jpg'
     img_obj = Img()  # Img 클래스의 인스턴스 생성
@@ -40,6 +62,8 @@ if __name__ == "__main__":
     
     region = Region(img_rgb)
     region.region_proposal()
-    region.rect()
+    cand_rects = region.rect() # rect만 추출
+    img_rgb_copy = region.bbox() # bbox 시각화
+    
     
     
