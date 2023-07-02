@@ -75,7 +75,7 @@ class IoU():
         
         return iou
 
-class Cand_gt_box():
+class Gt_box():
     def __init__(self, img_rgb):
         self.img_rgb = img_rgb
         
@@ -89,7 +89,40 @@ class Cand_gt_box():
         plt.show()
         
         return gt_box
-    
+
+class Visualization_():
+    def __init__(self, cand_rects, gt_box, img_rgb):
+        self.cand_rects = cand_rects
+        self.gt_box = gt_box
+        self.img_rgb = img_rgb
+        
+    def visualization(self):
+        green = (125, 255, 51)
+        
+        # 생성자 선언
+        iou_calculator = IoU(None, None)
+        for index , cand_box in enumerate(cand_rects):
+            cand_box = list(cand_box)
+            
+            cand_box[2] += cand_box[0]
+            cand_box[3] += cand_box[1]
+            
+            # IoU 클래스의 인스턴스를 생성하고 compute_iou() 메서드 호출
+            iou_calculator.cand_box = cand_box
+            iou_calculator.gt_box = self.gt_box
+            iou = iou_calculator.compute_iou()
+            
+            if iou > 0.5:
+                print('index :', index, 'iou :', iou, 'rectangle :', (cand_box[0],cand_box[1],cand_box[2],cand_box[3]))
+                cv2.rectangle(self.img_rgb, (cand_box[0],cand_box[1]) , (cand_box[2], cand_box[3]) , color=green , thickness=1)
+                text = "{} : {:.2f}".format(index, iou)
+                cv2.putText(self.img_rgb, text, (cand_box[0]+100, cand_box[1]+10) , cv2.FONT_HERSHEY_SIMPLEX, 0.4, color = green, thickness=1)
+        
+        plt.figure(figsize=(12,12))
+        plt.imshow(self.img_rgb)
+        plt.show()
+        
+        return self.img_rgb
 if __name__ == "__main__":
     img = '0. Img/IU.jpg'
     img_obj = Img()  # Img 클래스의 인스턴스 생성
@@ -100,6 +133,8 @@ if __name__ == "__main__":
     cand_rects = region.rect() # rect만 추출
     img_rgb_copy = region.bbox() # bbox 시각화
     
-    box = Cand_gt_box(img_rgb)
+    box = Gt_box(img_rgb)
     gt_box = box.GT_box() # gt_box
     
+    Visual = Visualization_(cand_rects,gt_box,img_rgb)
+    Visual_img = Visual.visualization()
