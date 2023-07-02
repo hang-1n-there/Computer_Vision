@@ -74,6 +74,21 @@ class IoU():
         iou = intersection / union
         
         return iou
+
+class Cand_gt_box():
+    def __init__(self, img_rgb):
+        self.img_rgb = img_rgb
+        
+    def GT_box(self):
+        red = (255,0,0)
+        gt_box = [190, 21, 390, 211] #fine tuned
+        
+        self.img_rgb = cv2.rectangle(self.img_rgb , (gt_box[0], gt_box[1]) , (gt_box[2], gt_box[3]), color=red, thickness= 2)
+        plt.figure(figsize=(8,8))
+        plt.imshow(self.img_rgb)
+        plt.show()
+        
+        return gt_box
     
 if __name__ == "__main__":
     img = '0. Img/IU.jpg'
@@ -85,5 +100,6 @@ if __name__ == "__main__":
     cand_rects = region.rect() # rect만 추출
     img_rgb_copy = region.bbox() # bbox 시각화
     
-    
+    box = Cand_gt_box(img_rgb)
+    gt_box = box.GT_box() # gt_box
     
